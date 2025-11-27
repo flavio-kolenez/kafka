@@ -1,0 +1,71 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_NODE_ID: "1"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      CLUSTER_ID: "l-ctdYHNSbKBvvTIwemuRg"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+  producer-api:
+    build: ./producer-api
+    container_name: producer-api
+    ports:
+      - "3000:3000"
+    environment:
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - ./producer-api:/app
+      - /app/node_modules
+    command: sh -c "npm install && npx nodemon src/index.js"
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+  consumers:
+    build: ./consumers
+    container_name: consumers
+    environment:
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - ./consumers:/app
+      - /app/node_modules
+    command: sh -c 'npm install && npx nodemon src/index.js'
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+volumes:
+  kafka-data:
+
+networks:
+  kafka-net:
+    driver: bridge
