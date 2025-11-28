@@ -1,23 +1,28 @@
 import { Kafka } from "kafkajs";
 
-async function run() {
-  const kafka = new Kafka({
-    clientId: "test-consumer",
-    brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
-  });
+const kafka = new Kafka({
+  clientId: "consumer-api",
+  brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
+});
 
-  const consumer = kafka.consumer({ groupId: "test-group" });
+const consumer = kafka.consumer({ groupId: "grupo-teste" });
 
+async function start() {
   await consumer.connect();
-  await consumer.subscribe({ topic: "test-topic", fromBeginning: true });
+  console.log("Consumer conectado no Kafka");
 
-  console.log("Consumer conectado e ouvindo...");
+  await consumer.subscribe({ topic: "test-topic", fromBeginning: true });
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      console.log(`[CONSUMER] Mensagem recebida: ${message.value.toString()}`);
+      console.log(`\n📩 Mensagem recebida:`);
+      console.log({
+        topic,
+        partition,
+        value: message.value.toString(),
+      });
     },
   });
 }
 
-run().catch(console.error);
+start().catch(console.error);

@@ -6,7 +6,7 @@ app.use(express.json());
 
 const kafka = new Kafka({
   clientId: "producer-api",
-  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
+  brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
 });
 
 const producer = kafka.producer();
@@ -24,7 +24,10 @@ app.post("/send", async (req, res) => {
       messages: [{ value: message }],
     });
 
-    return res.json({ ok: true, message: "Mensagem enviada!" });
+    return res.json({
+      ok: true,
+      message: "Mensagem enviada!"
+    });
 
   } catch (err) {
     console.error("Erro ao enviar:", err);
@@ -34,7 +37,10 @@ app.post("/send", async (req, res) => {
 
 async function start() {
   await producer.connect();
-  app.listen(3000, () => console.log("Producer API rodando na porta 3000"));
+  console.log("Producer conectado ao Kafka!");
+  app.listen(3000, () =>
+    console.log("Producer API rodando na porta 3000")
+  );
 }
 
 start().catch(console.error);
