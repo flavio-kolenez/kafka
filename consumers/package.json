@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon consumer.js",
-    "start": "node consumer.js"
+    "dev": "nodemon orderConsumer.js",
+    "start": "node orderConsumer.js"
   },
   "dependencies": {
     "kafkajs": "^2.2.3"
