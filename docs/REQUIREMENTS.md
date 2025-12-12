@@ -36,15 +36,15 @@ O sistema implementa um **pipeline sequencial** onde cada etapa depende da anter
 ### Criar pedido
 
 ```http
-POST /messages/order
+POST /order
 Content-Type: application/json
 
 {
-    "order_id": "1234",
+    "order_id": "ORD-2025-001234",
     "user_email": "cliente@example.com",
     "items": [
-        { "sku": "ABC123", "qty": 2, "price": 29.99 },
-        { "sku": "XYZ999", "qty": 1, "price": 59.99 }
+        { "sku": "TOALHA001", "qty": 2, "price": 29.99 },
+        { "sku": "TOALHA003", "qty": 1, "price": 45.50 }
     ]
 }
 ```
@@ -101,11 +101,3 @@ Content-Type: application/json
   - Centraliza tratamento de erros
   - Implementa retry policies
   - Notifica administradores
-
-## Vantagens deste Fluxo
-
-1. **Pipeline Sequencial**: Cada etapa só executa se a anterior foi bem-sucedida
-2. **Fail-Fast**: Erros são detectados cedo no processo
-3. **Centralização**: Logs e erros em consumers dedicados
-4. **Rastreabilidade**: Histórico completo de cada pedido
-5. **Escalabilidade**: Cada consumer pode ser escalado independentemente
