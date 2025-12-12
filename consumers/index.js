@@ -1,10 +1,10 @@
-import { startOrderConsumer } from './orderConsumer.js';
+import { startOrderValidator } from './OrderValidatorConsumer.js';
 
 async function startAllConsumers() {
   try {
     // Lista de consumers para iniciar
     const consumers = [
-      { name: 'Order Consumer', start: startOrderConsumer }
+      { name: 'Order Consumer', start: startOrderValidator }
       // { name: 'User Consumer', start: startUserConsumer },
       // { name: 'Payment Consumer', start: startPaymentConsumer }
     ];
@@ -21,7 +21,7 @@ async function startAllConsumers() {
     });
 
     await Promise.all(consumerPromises);
-    console.log('All consumers started!');
+    console.log('✅ All consumers started!');
 
   } catch (error) {
     console.error('Erro consumers:', error);

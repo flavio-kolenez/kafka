@@ -1,0 +1,197 @@
+{
+	"info": {
+		"_postman_id": "kafka-toalhas-api",
+		"name": "Kafka Toalhas API",
+		"description": "Collection completa para testar a API de pedidos com Kafka e estoque de toalhas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Stock Management",
+			"item": [
+				{
+					"name": "Lista todos os produtos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/stock",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock"]
+						}
+					}
+				},
+				{
+					"name": "Consulta produto específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/stock/TOALHA001",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock", "TOALHA001"]
+						}
+					}
+				},
+				{
+					"name": "Verifica estoque - 1 item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sku\": \"TOALHA001\",\n    \"qty\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/stock/check",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock", "check"]
+						}
+					}
+				},
+				{
+					"name": "Verifica estoque - múltiplos itens",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"sku\": \"TOALHA001\",\n            \"qty\": 2\n        },\n        {\n            \"sku\": \"TOALHA002\",\n            \"qty\": 3\n        },\n        {\n            \"sku\": \"TOALHA003\",\n            \"qty\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/stock/check-multiple",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock", "check-multiple"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Criar pedido simples",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"ORD-2025-001\",\n    \"user_email\": \"cliente@exemplo.com\",\n    \"items\": [\n        {\n            \"sku\": \"TOALHA001\",\n            \"qty\": 2,\n            \"price\": 29.99\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/messages/order",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages", "order"]
+						}
+					}
+				},
+				{
+					"name": "Criar pedido múltiplos itens",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"ORD-2025-002\",\n    \"user_email\": \"joao@email.com\",\n    \"items\": [\n        {\n            \"sku\": \"TOALHA001\",\n            \"qty\": 2,\n            \"price\": 29.99\n        },\n        {\n            \"sku\": \"TOALHA003\",\n            \"qty\": 1,\n            \"price\": 45.50\n        },\n        {\n            \"sku\": \"TOALHA006\",\n            \"qty\": 3,\n            \"price\": 15.90\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/messages/order",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages", "order"]
+						}
+					}
+				},
+				{
+					"name": "Pedido com estoque insuficiente (teste)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"ORD-2025-999\",\n    \"user_email\": \"teste@erro.com\",\n    \"items\": [\n        {\n            \"sku\": \"TOALHA001\",\n            \"qty\": 999,\n            \"price\": 29.99\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/messages/order",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages", "order"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Status & Health",
+			"item": [
+				{
+					"name": "Status da API",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["status"]
+						}
+					}
+				},
+				{
+					"name": "Lista tópicos Kafka",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status/topics",
+							"host": ["{{baseUrl}}"],
+							"path": ["status", "topics"]
+						}
+					}
+				},
+				{
+					"name": "Lista todas as rotas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status/routes",
+							"host": ["{{baseUrl}}"],
+							"path": ["status", "routes"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

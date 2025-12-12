@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js",
+    "dev": "nodemon startConsumers.js",
+    "start": "node startConsumers.js",
     "dev:order": "nodemon orderConsumer.js",
     "start:order": "node orderConsumer.js"
   },
