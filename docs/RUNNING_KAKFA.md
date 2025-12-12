@@ -3,17 +3,19 @@
 Antes de qualquer coisa, instale as dependencias:
 
 ```bash
-# Da api:
-> cd C:\Users\flavio\Documents\estagio\Kafka\producer-api ;  npm run dev
+# Da API:
+> cd C:\Users\flavio\Documents\estagio\kafka-nodejs\producer-api
+> npm install
 
 # Dos consumers:
-> cd C:\Users\flavio\Documents\estagio\Kafka\consumers ;  npm run dev
+> cd C:\Users\flavio\Documents\estagio\kafka-nodejs\consumers
+> npm install
 ```
 
 ## Subindo o Kafka
 
 Dentro do **WSL**, entra na pasta do kafka:
- - Pra entrar dentro do WSL é só rodar WSL, lol
+ - Pra entrar dentro do WSL é só rodar `wsl` no terminal
 
 ```bash
 > wsl cd /mnt/c/kafka/kafka_2.13-3.7.0
@@ -82,23 +84,44 @@ $ bin/kafka-topics.sh --create --topic newOrder --bootstrap-server localhost:909
 
 ```bash
 # Dentro de: 
-
-> cd C:\Users\flavio\Documents\estagio\Kafka\producer-api
+> cd C:\Users\flavio\Documents\estagio\kafka-nodejs\producer-api
 
 # Rode:
 > npm run dev
 ```
 
-A **API** vai estar no ar!
+A **API** vai estar no ar na porta 3000!
 
 ## Subir os consumers
 
-```bash
-> cd C:\Users\flavio\Documents\estagio\Kafka\consumers
+**NOVA ESTRUTURA - Agora você pode rodar todos os consumers de uma vez:**
 
-# rode:
+### Opção 1: Rodar TODOS os consumers juntos (Recomendado 🚀)
+```bash
+> cd C:\Users\flavio\Documents\estagio\kafka-nodejs\consumers
+
+# Roda todos os consumers em um só processo:
 > npm run dev
 ```
+
+### Opção 2: Rodar consumers individualmente
+```bash
+> cd C:\Users\flavio\Documents\estagio\kafka-nodejs\consumers
+
+# Apenas o order consumer:
+> npm run dev:order
+
+# Para adicionar novos consumers, use:
+# npm run dev:user
+# npm run dev:payment
+# etc...
+```
+
+### ✨ Comandos disponíveis:
+- `npm run dev` - Roda todos os consumers com nodemon (desenvolvimento)
+- `npm start` - Roda todos os consumers (produção)
+- `npm run dev:order` - Roda apenas o order consumer com nodemon
+- `npm run start:order` - Roda apenas o order consumer
 
 ## Por fim
 Se tudo estiver rodando, teste fazendo uma requisição simples:

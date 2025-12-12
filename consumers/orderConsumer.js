@@ -7,28 +7,31 @@ const kafka = new Kafka({
 
 const consumer = kafka.consumer({ groupId: "order" });
 
-async function start() {
-
+export async function startOrderConsumer() {
   try {
     await consumer.connect();
-    console.log("Consumer conectado no Kafka");
+    console.log("Order Consumer connected to Kafka!");
   } catch (error) {
-    console.log("Erro ao conectar ao kafka! \n");
+    console.log("Error connecting Order Consumer to kafka!");
     console.log(error);
+    throw error;
   }
 
   await consumer.subscribe({ topic: "newOrder", fromBeginning: true });
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      console.log(`\n Message received:`);
+      console.log(`\n📦 Order Message received:`);
       console.log({
         topic,
         partition,
         value: message.value.toString(),
+        timestamp: new Date().toISOString()
       });
     },
   });
 }
 
-start().catch(console.error);
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startOrderConsumer().catch(console.error);
+}

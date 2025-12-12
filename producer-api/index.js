@@ -1,18 +1,17 @@
-import express from 'express';
+import app from './app.js';
 import { connectProducer } from './kafka.js';
-import messagesRouter from './routes/index.js';
-
-const app = express();
-app.use(express.json());
-
-app.use('/', messagesRouter);
 
 async function start() {
-  await connectProducer();
-
-  app.listen(process.env.PORT || 3000, () => {
-    console.log('Producer API running at', process.env.PORT || 3000);
-  });
+  try {
+    await connectProducer();
+    
+    app.listen(process.env.PORT || 3000, () => {
+      console.log('Producer API running at', process.env.PORT || 3000);
+    });
+  } catch (error) {
+    console.error('Failed to start producer API:', error);
+    process.exit(1);
+  }
 }
 
-start().catch(console.error);
+start();
