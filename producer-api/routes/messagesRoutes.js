@@ -3,7 +3,7 @@ import { producer } from '../kafka.js';
 
 const router = express.Router();
 
-router.post('/send', async (req, res) => {
+router.post('/order', async (req, res) => {
   const { message } = req.body;
 
   if (!message) {
@@ -12,10 +12,10 @@ router.post('/send', async (req, res) => {
 
   try {
     console.log('Sending message to Kafka:', message);
-    
+
     await producer.send({ 
       topic: 'newOrder', 
-      messages: [{ value: JSON.stringify({ message, timestamp: new Date().toISOString() }) }] 
+      order: [{ value: JSON.stringify({ orderItens, timestamp: new Date().toISOString() }) }] 
     });
 
     return res.json({ status: 'success', message: message });
