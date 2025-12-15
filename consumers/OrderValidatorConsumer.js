@@ -1,34 +1,37 @@
 import { Kafka } from "kafkajs";
 import { checkMultipleStock, checkStock } from "../services/stockManager.js";
 import { errorHandler } from "./helpers/errorHandler.js";
+import { Logger } from "./helpers/logger.js";
 
 const kafka = new Kafka({
   clientId: "consumer-api",
   brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
+  logLevel: 1,
 });
 
-const consumer = kafka.consumer({ groupId: "order" });
-const producer = kafka.producer();
+const orderValidatorConsumer = kafka.consumer({ groupId: "order-validator" });
+const orderValidatorProducer = kafka.producer();
 
 export async function startOrderValidator() {
   try {
-    await consumer.connect();
-    await producer.connect();
-    console.log("✅ Order Validator connected to Kafka!");
+    await orderValidatorConsumer.connect();
+    await orderValidatorProducer.connect();
   } catch (error) {
-    console.log("❌ Error connecting Order Consumer to kafka: ");
-    console.log(error);
+    Logger.error("ORDER-VALIDATOR", "Failed to connect to Kafka", error);
     throw error;
   }
 
-  await consumer.subscribe({ topic: "newOrder", fromBeginning: true });
+  await orderValidatorConsumer.subscribe({ topic: "newOrder", fromBeginning: false });
 
-  await consumer.run({
+  await orderValidatorConsumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       try {
+        Logger.separator("ORDER VALIDATION STARTED");
+        
         const orderData = JSON.parse(message.value.toString());
-        console.log(`\n📦 Order Message received from topic: ${topic}`);
-        console.log('📋 Order Data:', orderData);
+
+        const validations = [];
+        let stockValidation;
 
         // Validação de formato usando errorHandler
         // Verificar campos obrigatórios
@@ -40,11 +43,14 @@ export async function startOrderValidator() {
             order_id: orderData.order_id || 'unknown',
             errorType: "validation"
           });
-          console.log('❌ Invalid order format - sent to orderError topic');
+          
+          validations.push({ result: false, message: "Invalid order format - sent to orderError topic" });
+          Logger.groupValidation("ORDER-VALIDATOR", validations);
           return;
         }
+        
+        validations.push({ result: true, message: "Required fields check passed" });
 
-        // Validar tipos dos campos
         if (typeof orderData.user_email !== 'string' || !orderData.user_email.includes('@')) {
           await errorHandler({
             error: "Invalid user_email format",
@@ -53,6 +59,9 @@ export async function startOrderValidator() {
             order_id: orderData.order_id,
             errorType: "validation"
           });
+
+          validations.push({ result: false, message: "Invalid user email format - sent to orderError topic" });
+          Logger.groupValidation("ORDER-VALIDATOR", validations);
           return;
         }
 
@@ -64,11 +73,15 @@ export async function startOrderValidator() {
             order_id: orderData.order_id,
             errorType: "validation"
           });
+
+          validations.push({ result: false, message: "Invalid items array - sent to orderError topic" });
+          Logger.groupValidation("ORDER-VALIDATOR", validations);
           return;
         }
 
-        let stockValidation;
-
+        validations.push({ result: true, message: "Items array is valid" });
+        validations.push({ result: true, message: "Starting stock validation..." });
+        
         if (orderData.items.length > 1) {
           stockValidation = checkMultipleStock(orderData.items);
         } else {
@@ -79,6 +92,7 @@ export async function startOrderValidator() {
             details: [stockValidation]
           };
         }
+
         if (!stockValidation.allAvailable) {
           await errorHandler({
             error: "Stock validation failed",
@@ -88,17 +102,20 @@ export async function startOrderValidator() {
             errorType: "stock",
             stockDetails: stockValidation.details
           });
-          console.log(`❌ Stock validation failed for order: ${orderData.order_id}`);
+          validations.push({ result: false, message: `Stock validation failed for order: ${orderData.order_id}`, data: stockValidation.details });
+          Logger.groupValidation("ORDER-VALIDATOR", validations);
           return;
         }
 
-
-        console.log(`✅ Order ${orderData.order_id} passed format validation`);
+        validations.push({ result: true, message: "Stock validation passed successfully!" });
+        
+        // Mostrar todas as validações agrupadas
+        Logger.groupValidation("ORDER-VALIDATOR", validations);
 
         // Se passou por todas as validações
         // envia o order para o topico validated Order  
-        await producer.send({
-          topic: "validatedOrder",
+        await orderValidatorProducer.send({
+          topic: "validOrder",
           messages: [{
             value: JSON.stringify({
               ...orderData,
@@ -107,22 +124,23 @@ export async function startOrderValidator() {
           }]
         });
 
+
         // Log de sucesso padrão em todo pedido
-        await producer.send({
+        await orderValidatorProducer.send({
           topic: "orderLog",
           messages: [{
             value: JSON.stringify({
               order_id: orderData.order_id,
-
-              consumer: "orderValidator"
+              consumer: "orderValidator",
+              event: "order_validated_successfully",
+              timestamp: new Date().toISOString(),
+              user_email: orderData.user_email
             })
           }]
         });
 
-        console.log(`Order ${orderData.order_id} validated and sent to validOrder topic`);
-
       } catch (error) {
-        console.error('❌ Error processing message:', error);
+        Logger.error("ORDER-VALIDATOR", "Error processing message", error);
 
         await errorHandler({
           error: "Failed to process order message",
@@ -137,5 +155,7 @@ export async function startOrderValidator() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  startOrderValidator().catch(console.error);
+  startOrderValidator().catch((error) => {
+    Logger.error("ORDER-VALIDATOR", "Failed to start consumer", error);
+  });
 }

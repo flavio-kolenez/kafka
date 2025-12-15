@@ -3,6 +3,7 @@ import { Kafka } from 'kafkajs';
 const kafka = new Kafka({
   clientId: 'producer-api',
   brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
+  logLevel: 1,
 });
 
 const producer = kafka.producer();

@@ -1,3 +1,5 @@
+import { Logger } from './helpers/logger.js';
+
 // Banco de dados em memória para simular estoque
 const stockDatabase = new Map([
   ['TOALHA001', { name: 'Toalha de Banho Felpuda Azul', sku: 'TOALHA001', quantity: 25 }],
@@ -92,4 +94,4 @@ export function listAllProducts() {
 }
 
 // Log inicial do estoque
-console.log(`📦 [STOCK MANAGER] Banco de estoque iniciado com ${stockDatabase.size} produtos`);
+Logger.info('STOCK-MANAGER', `Stock bank initialized with ${stockDatabase.size} products`);

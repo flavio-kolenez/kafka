@@ -1,3 +1,14 @@
+import { Kafka } from "kafkajs";
+import { Logger } from "./logger.js";
+
+const kafka = new Kafka({
+  clientId: "error-handler",
+  brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
+  logLevel: 1,
+});
+
+const errorHandlerProducer = kafka.producer();
+
 export async function errorHandler({
   error,
   errorMessage = '',
@@ -8,7 +19,9 @@ export async function errorHandler({
   stockDetails = null
 }) {
   try {
-    await producer.send({
+    await errorHandlerProducer.connect();
+    
+    await errorHandlerProducer.send({
       topic: "orderError",
       messages: [{
         value: JSON.stringify({
@@ -22,8 +35,12 @@ export async function errorHandler({
         })
       }]
     });
-    console.log(`🚨 Error sent to orderError topic: ${error}`);
+    
+    Logger.kafka("SENT", "orderError", `Error sent: ${error}`);
+    
+    await errorHandlerProducer.disconnect();
+    
   } catch (sendError) {
-    console.error('💥 Failed to send error to Kafka:', sendError);
+    Logger.error("ERROR-HANDLER", "Failed to send error to Kafka", sendError);
   }
 }

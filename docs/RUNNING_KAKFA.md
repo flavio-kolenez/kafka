@@ -17,9 +17,23 @@ Antes de qualquer coisa, instale as dependencias:
 Dentro do **WSL**, entra na pasta do kafka:
  - Pra entrar dentro do WSL é só rodar `wsl` no terminal
 
-```bash
-> wsl cd /mnt/c/kafka/kafka_2.13-3.7.0
+Gere o UUID para o Cluster:
 
+```bash
+cd /mnt/c/kafka/kafka_2.13-3.7.0
+CLUSTER_UUID=$(bin/kafka-storage.sh random-uuid)
+echo "UUID gerado: $CLUSTER_UUID"
+```
+
+Formate as configurações do server com esse uuid:
+
+```bash
+    bin/kafka-storage.sh format -t $CLUSTER_UUID -c config/kraft/server.properties
+```
+
+Depois só iniciar o Kafka normalmente:
+
+```bash
 # Inicia o kafka, vai estar rodando na porta 9092
 $ bin/kafka-server-start.sh config/kraft/server.properties
 ```
@@ -36,8 +50,14 @@ Criar tópico 'teste', lembre de renomear depois:
 $ cd /mnt/c/kafka/kafka_2.13-3.7.0
 
 # Cria o tópico 'teste'
-$ .\bin\windows\kafka-topics.bat --create --topic teste --bootstrap-server localhost:9092
+bin/kafka-topics.sh --create --topic orderError --bootstrap-server localhost:9092 --partitions 1  --replication-factor 1
 ```
+
+Topicos necessarios:
+- orderLog
+- validOrder
+- newOrder
+- orderError
 
 Listar todos os tópicos criados:
 
@@ -94,9 +114,7 @@ A **API** vai estar no ar na porta 3000!
 
 ## Subir os consumers
 
-**NOVA ESTRUTURA - Agora você pode rodar todos os consumers de uma vez:**
-
-### Opção 1: Rodar TODOS os consumers juntos (Recomendado 🚀)
+### Opção 1: Rodando todos os consumers juntos!
 ```bash
 > cd C:\Users\flavio\Documents\estagio\kafka-nodejs\consumers
 
@@ -117,7 +135,7 @@ A **API** vai estar no ar na porta 3000!
 # etc...
 ```
 
-### ✨ Comandos disponíveis:
+### Comandos disponíveis:
 - `npm run dev` - Roda todos os consumers com nodemon (desenvolvimento)
 - `npm start` - Roda todos os consumers (produção)
 - `npm run dev:order` - Roda apenas o order consumer com nodemon

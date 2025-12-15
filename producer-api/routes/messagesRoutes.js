@@ -1,5 +1,6 @@
 import express from 'express';
 import { producer } from '../kafka.js';
+import { Logger } from '../helpers/logger.js';
 
 const router = express.Router();
 
@@ -30,12 +31,14 @@ router.post('/order', async (req, res) => {
       status: 'CREATED'
     };
 
-    console.log('📦 Sending order to Kafka:', order_id);
+    Logger.kafka('SENDING', 'newOrder', `Sending order ${order_id}`, orderData);
 
     await producer.send({ 
       topic: 'newOrder', 
       messages: [{ value: JSON.stringify(orderData) }] 
     });
+
+    Logger.success('PRODUCER-API', `Order ${order_id} sent to Kafka successfully`);
 
     return res.json({ 
       status: 'success', 
@@ -43,7 +46,7 @@ router.post('/order', async (req, res) => {
       message: `Pedido ${order_id} criado com sucesso!`
     });
   } catch (err) {
-    console.error('Error sending message:', err);
+    Logger.error('PRODUCER-API', 'Error sending message to Kafka', err);
     return res.status(500).json({ status:'error', error: err.message || String(err) });
   }
 });
