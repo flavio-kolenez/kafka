@@ -1,4 +1,4 @@
-import { Logger } from './helpers/logger.js';
+import { Logger } from '../utils/logger.js';
 
 // Banco de dados em memória para simular estoque
 const stockDatabase = new Map([

@@ -1,4 +1,4 @@
-// Logger helper para logs bonitos e organizados
+// Logger helper centralizado para logs bonitos e organizados
 export class Logger {
   static colors = {
     reset: '\x1b[0m',

@@ -1,5 +1,5 @@
 import { Kafka } from "kafkajs";
-import { Logger } from "./logger.js";
+import { Logger } from "../../utils/logger.js";
 
 const kafka = new Kafka({
   clientId: "error-handler",

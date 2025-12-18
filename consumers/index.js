@@ -1,7 +1,7 @@
 import { startOrderValidator } from './OrderValidatorConsumer.js';
 import { startLoggerConsumer } from './loggerConsumer.js';
 import { startStockConsumer } from './stockConsumer.js';
-import { Logger } from './helpers/logger.js';
+import { Logger } from '../utils/logger.js';
 
 async function startAllConsumers() {
   try {
@@ -15,7 +15,7 @@ async function startAllConsumers() {
 
     Logger.separator('CONSUMERS STARTUP');
 
-    // Inicia todos os consumers em paralelo
+    // Inicia todos os consumers em paralelo"
     const consumerPromises = consumers.map(async (consumer) => {
       try {
         await consumer.start();

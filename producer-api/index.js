@@ -1,6 +1,6 @@
 import app from './app.js';
 import { connectProducer } from './kafka.js';
-import { Logger } from './helpers/logger.js';
+import { Logger } from '../utils/logger.js';
 
 async function start() {
   try {

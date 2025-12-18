@@ -1,7 +1,7 @@
 import { Kafka } from "kafkajs";
 import { checkMultipleStock, checkStock } from "../services/stockManager.js";
 import { errorHandler } from "./helpers/errorHandler.js";
-import { Logger } from "./helpers/logger.js";
+import { Logger } from "../utils/logger.js";
 
 const kafka = new Kafka({
   clientId: "consumer-api",

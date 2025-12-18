@@ -1,6 +1,6 @@
 import express from 'express';
 import { producer } from '../kafka.js';
-import { Logger } from '../helpers/logger.js';
+import { Logger } from '../../shared/logger.js';
 
 const router = express.Router();
 
@@ -11,14 +11,14 @@ router.post('/order', async (req, res) => {
   if (!order_id || !user_email || !items) {
     return res.status(400).json({ 
       status: 'error', 
-      error: 'order_id, user_email e items são obrigatórios!' 
+      error: 'order_id, user_email, and items are required.!' 
     });
   }
 
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ 
       status: 'error', 
-      error: 'items deve ser um array com pelo menos 1 item!' 
+      error: '`items` must be an array with at least 1 item!' 
     });
   }
 
@@ -43,7 +43,7 @@ router.post('/order', async (req, res) => {
     return res.json({ 
       status: 'success', 
       order: orderData,
-      message: `Pedido ${order_id} criado com sucesso!`
+      message: `Order ${order_id} created successfully!`
     });
   } catch (err) {
     Logger.error('PRODUCER-API', 'Error sending message to Kafka', err);
