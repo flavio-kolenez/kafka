@@ -1,6 +1,6 @@
 import express from 'express';
 import { producer } from '../kafka.js';
-import { Logger } from '../../shared/logger.js';
+import { Logger } from '../../utils/logger.js';
 
 const router = express.Router();
 

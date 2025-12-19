@@ -50,7 +50,7 @@ Criar tópico 'teste', lembre de renomear depois:
 $ cd /mnt/c/kafka/kafka_2.13-3.7.0
 
 # Cria o tópico 'teste'
-bin/kafka-topics.sh --create --topic orderError --bootstrap-server localhost:9092 --partitions 1  --replication-factor 1
+bin/kafka-topics.sh --create --topic orderError --bootstrap-server localhost:9092 --partitions 1  --replication-factornb  1
 ```
 
 Topicos necessarios:

@@ -1,6 +1,6 @@
 import { startOrderValidator } from './OrderValidatorConsumer.js';
 import { startLoggerConsumer } from './loggerConsumer.js';
-import { startStockConsumer } from './stockConsumer.js';
+import { startStockConsumer } from './StockConsumer.js';
 import { Logger } from '../utils/logger.js';
 
 async function startAllConsumers() {

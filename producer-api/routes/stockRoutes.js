@@ -4,7 +4,7 @@ import {
   getProduct, 
   checkStock, 
   checkMultipleStock
-} from '../../services/stockManager.js';
+} from '../../stock-service/stockManager.js';
 
 const router = express.Router();
 

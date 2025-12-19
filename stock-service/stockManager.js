@@ -2,16 +2,16 @@ import { Logger } from '../utils/logger.js';
 
 // Banco de dados em memória para simular estoque
 const stockDatabase = new Map([
-  ['TOALHA001', { name: 'Toalha de Banho Felpuda Azul', sku: 'TOALHA001', quantity: 25 }],
-  ['TOALHA002', { name: 'Toalha de Rosto Branca', sku: 'TOALHA002', quantity: 40 }],
-  ['TOALHA003', { name: 'Toalha de Praia Listrada', sku: 'TOALHA003', quantity: 15 }],
-  ['TOALHA004', { name: 'Toalha de Banho Algodão Rosa', sku: 'TOALHA004', quantity: 18 }],
-  ['TOALHA005', { name: 'Toalha de Mesa Quadriculada', sku: 'TOALHA005', quantity: 8 }],
-  ['TOALHA006', { name: 'Toalha de Cozinha Microfibra', sku: 'TOALHA006', quantity: 35 }],
-  ['TOALHA007', { name: 'Toalha de Banho Extra Grande Cinza', sku: 'TOALHA007', quantity: 12 }],
-  ['TOALHA008', { name: 'Toalha de Rosto Bordada Verde', sku: 'TOALHA008', quantity: 22 }],
-  ['TOALHA009', { name: 'Toalha de Praia Temática Tropical', sku: 'TOALHA009', quantity: 9 }],
-  ['TOALHA010', { name: 'Toalha de Banho Bambú Ecológica', sku: 'TOALHA010', quantity: 14 }]
+	['TOALHA001', { name: 'Toalha de Banho Felpuda Azul', sku: 'TOALHA001', quantity: 25 }],
+	['TOALHA002', { name: 'Toalha de Rosto Branca', sku: 'TOALHA002', quantity: 40 }],
+	['TOALHA003', { name: 'Toalha de Praia Listrada', sku: 'TOALHA003', quantity: 15 }],
+	['TOALHA004', { name: 'Toalha de Banho Algodão Rosa', sku: 'TOALHA004', quantity: 18 }],
+	['TOALHA005', { name: 'Toalha de Mesa Quadriculada', sku: 'TOALHA005', quantity: 8 }],
+	['TOALHA006', { name: 'Toalha de Cozinha Microfibra', sku: 'TOALHA006', quantity: 35 }],
+	['TOALHA007', { name: 'Toalha de Banho Extra Grande Cinza', sku: 'TOALHA007', quantity: 12 }],
+	['TOALHA008', { name: 'Toalha de Rosto Bordada Verde', sku: 'TOALHA008', quantity: 22 }],
+	['TOALHA009', { name: 'Toalha de Praia Temática Tropical', sku: 'TOALHA009', quantity: 9 }],
+	['TOALHA010', { name: 'Toalha de Banho Bambú Ecológica', sku: 'TOALHA010', quantity: 14 }]
 ]);
 
 /**
@@ -20,7 +20,7 @@ const stockDatabase = new Map([
  * @returns {boolean}
  */
 export function productExists(sku) {
-  return stockDatabase.has(sku);
+	return stockDatabase.has(sku);
 }
 
 /**
@@ -29,7 +29,7 @@ export function productExists(sku) {
  * @returns {object|null} - Dados do produto ou null se não existir
  */
 export function getProduct(sku) {
-  return stockDatabase.get(sku) || null;
+	return stockDatabase.get(sku) || null;
 }
 
 /**
@@ -39,50 +39,50 @@ export function getProduct(sku) {
  * @returns {object} - { available: boolean, currentStock: number, product: object }
  */
 export function checkStock(sku, requestedQty) {
-  const product = stockDatabase.get(sku);
-  
-  if (!product) {
-    return {
-      available: false,
-      currentStock: 0,
-      product: null,
-      reason: `Product with SKU ${sku} not found`
-    };
-  }
+	const product = stockDatabase.get(sku);
 
-  const available = product.quantity >= requestedQty;
-  
-  return {
-    available,
-    currentStock: product.quantity,
-    product: { ...product },
-    reason: available ? null : `Insufficient stock. Available: ${product.quantity}, Requested: ${requestedQty}`
-  };
+	if (!product) {
+		return {
+			available: false,
+			currentStock: 0,
+			product: null,
+			reason: `Product with SKU ${sku} not found`
+		};
+	}
+
+	const available = product.quantity >= requestedQty;
+
+	return {
+		available,
+		currentStock: product.quantity,
+		product: { ...product },
+		reason: available ? null : `Insufficient stock. Available: ${product.quantity}, Requested: ${requestedQty}`
+	};
 }
 
 /**
  * Verifica estoque para múltiplos itens
- * @param {Array} items - Array de objetos { sku, qty }
+ * @param {Array} items - Array de objetos { sku, quantity }
  * @returns {object} - { allAvailable: boolean, details: Array, totalItems: number }
  */
 export function checkMultipleStock(items) {
-  const details = items.map(item => {
-    const stockCheck = checkStock(item.sku, item.qty);
-    return {
-      sku: item.sku,
-      requestedQty: item.qty,
-      ...stockCheck
-    };
-  });
+	const details = items.map(item => {
+		const stockCheck = checkStock(item.sku, item.quantity);
+		return {
+			sku: item.sku,
+			requestedQty: item.quantity,
+			...stockCheck
+		};
+	});
 
-  const allAvailable = details.every(detail => detail.available);
-  
-  return {
-    allAvailable,
-    details,
-    totalItems: items.length,
-    unavailableItems: details.filter(d => !d.available).length
-  };
+	const allAvailable = details.every(detail => detail.available);
+
+	return {
+		allAvailable,
+		details,
+		totalItems: items.length,
+		unavailableItems: details.filter(d => !d.available).length
+	};
 }
 
 /*
@@ -90,8 +90,33 @@ export function checkMultipleStock(items) {
  * @returns {Array} - Array com todos os produtos
  */
 export function listAllProducts() {
-  return Array.from(stockDatabase.values());
+	return Array.from(stockDatabase.values());
 }
 
+export function updateStock(orderItem) {
+	const product = getProduct(orderItem.sku);
+
+	if (!product) {
+		Logger.error('STOCK-MANAGER', `Product with SKU ${orderItem.sku} not found`);
+		throw new Error(`Product with SKU ${orderItem.sku} not found`);
+	}
+
+	const newQuantity = product.quantity - orderItem.quantity;
+
+	// Verificar se vai ficar negativo
+	if (newQuantity < 0) {
+		Logger.error('STOCK-MANAGER', `Insufficient stock for ${orderItem.sku}. Available: ${product.quantity}, Requested: ${orderItem.quantity}`);
+		throw new Error(`Insufficient stock for ${orderItem.sku}`);
+	}
+
+	stockDatabase.set(orderItem.sku, {
+		...product,
+		quantity: newQuantity
+	});
+
+	Logger.info('STOCK-MANAGER', `Stock updated for ${orderItem.sku}: ${product.quantity} → ${newQuantity}`);
+	
+	return { success: true, sku: orderItem.sku, previousQuantity: product.quantity, newQuantity };
+}
 // Log inicial do estoque
 Logger.info('STOCK-MANAGER', `Stock bank initialized with ${stockDatabase.size} products`);

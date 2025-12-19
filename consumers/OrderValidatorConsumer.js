@@ -1,5 +1,5 @@
 import { Kafka } from "kafkajs";
-import { checkMultipleStock, checkStock } from "../services/stockManager.js";
+import { checkMultipleStock, checkStock } from "../stock-service/stockManager.js";
 import { errorHandler } from "./helpers/errorHandler.js";
 import { Logger } from "../utils/logger.js";
 
@@ -86,7 +86,7 @@ export async function startOrderValidator() {
           stockValidation = checkMultipleStock(orderData.items);
         } else {
           const item = orderData.items[0];
-          stockValidation = checkStock(item.sku, item.qty);
+          stockValidation = checkStock(item.sku, item.quantity);
           stockValidation = {
             allAvailable: stockValidation.available,
             details: [stockValidation]
